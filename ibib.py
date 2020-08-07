@@ -108,7 +108,23 @@ class InteractiveBibtex(object):
 
     def word_cloud(self,interactive=False,
                    figsize=(11,8.5),dpi=100,bkg='white',cmap='viridis'):
-        # generate word cloud
+        """
+        Parameters
+        ----------
+        interactive : False or str
+            Interaction may be:
+            * "open" : open a random doi
+            * "pop" : open a random doi and remove it from the list
+        figsize : tuple
+            Figure size, kwarg for plt.subplots()
+        dpi : int
+            Figure resolution, kwarg for plt.subplots()
+        bkg : str
+            WordCloud background color
+        cmap : str or matplotlib colormap
+            From which to select text colors
+        """
+        # generate the word cloud
         wc = WordCloud(width=int(figsize[0]*dpi),height=int(figsize[1]*dpi),
                        background_color=bkg,colormap=cmap)
         wc.generate_from_frequencies(self.counts)
@@ -119,7 +135,7 @@ class InteractiveBibtex(object):
         ax.axis('off')
         plt.tight_layout()
         # create event handlers
-        if interactive:
+        if not interactive==False:
             def on_click(event):
                 if not event.inaxes:
                     return
@@ -133,21 +149,23 @@ class InteractiveBibtex(object):
                     if len(indices) == 0:
                         print('No more articles to open')
                         return
-                    to_open = np.random.choice(indices)
-                    for idx in indices:
-                        authors = self.entries[idx]['author']
-                        title = self.entries[idx]['title']
-                        if idx == to_open:
-                            pre = '* '
-                            try:
-                                url = 'https://doi.org/'+self.entries[idx]['doi']
-                            except KeyError:
-                                url = 'https://lmgtfy.com/?q='+title.replace(' ','+')
-                            webbrowser.open(url,new=2)
-                        else:
-                            pre = '  '
-                        print(pre+authors[:20]+' - '+title[:55])
-                    self.keyword_map[selected].remove(to_open)
+                    if interactive in ['open','pop']:
+                        to_open = np.random.choice(indices)
+                        for idx in indices:
+                            authors = self.entries[idx]['author']
+                            title = self.entries[idx]['title']
+                            if idx == to_open:
+                                pre = '* '
+                                try:
+                                    url = 'https://doi.org/'+self.entries[idx]['doi']
+                                except KeyError:
+                                    url = 'https://lmgtfy.com/?q='+title.replace(' ','+')
+                                webbrowser.open(url,new=2)
+                            else:
+                                pre = '  '
+                            print(pre+authors[:20]+' - '+title[:55])
+                        if interactive == 'pop':
+                            self.keyword_map[selected].remove(to_open)
             fig.canvas.mpl_connect('button_press_event', on_click)
         # show
         return fig,ax
@@ -161,6 +179,7 @@ if __name__ == '__main__':
     bib = InteractiveBibtex(sys.argv[1])
     bib.keyword_counts()
     #bib.keyword_bar_plot()
-    bib.word_cloud(interactive=True)
+    #bib.word_cloud()
+    bib.word_cloud(interactive='pop')
     plt.show()
 
