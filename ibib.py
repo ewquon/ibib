@@ -130,8 +130,8 @@ class InteractiveBibtex(object):
         wc.generate_from_frequencies(self.counts)
         # show the image
         fig,ax = plt.subplots(figsize=figsize,dpi=dpi)
-        img = wc.to_array()
-        ax.imshow(img,interpolation='bilinear')
+        img = wc.to_image()
+        ax.imshow(np.array(img),interpolation='bilinear')
         ax.axis('off')
         plt.tight_layout()
         # create event handlers
@@ -139,8 +139,8 @@ class InteractiveBibtex(object):
             def on_click(event):
                 if not event.inaxes:
                     return
-                i,j = int(np.round(event.xdata)), int(np.round(event.ydata))
-                selected = wc.get_word_by_color(img[j,i,:])
+                rgb = img.getpixel((event.xdata,event.ydata))
+                selected = wc.get_word_by_color(rgb)
                 if selected is not None:
                     s = f'Articles about {selected}'
                     print(f'\n{s}')

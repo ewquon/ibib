@@ -6,11 +6,11 @@ with your bibtex database through a word cloud.
 Dependencies include a modified version of the `word_cloud` package:
   https://github.com/ewquon/word_cloud
 This version includes a simple function to identify keywords from a word cloud
-based on the text color (assumed to be unique). The added function is:
-
+based on the text color (assumed to be unique). The added function in
+`wordcloud/wordcloud.py` is:
 ```python
 def get_word_by_color(self,rgb):
-    if all(rgb==255):
+    if rgb == ImageColor.getcolor(self.background_color,mode='RGB'):
         return None
     selected = None
     for wordlayout in self.layout_:
