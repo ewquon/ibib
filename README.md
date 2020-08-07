@@ -25,3 +25,4 @@ def get_word_by_color(self,rgb):
 I run `ibib.py` with a Zotero/Better-BibTeX bib file (exported with the "keep
 updated" option) as input.
 
+![BibTex Keyword Cloud](examples/bib_keyword_cloud.png)
